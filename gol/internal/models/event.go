@@ -22,9 +22,9 @@ type Event struct {
 	// InstanceID, Region, ServiceName, and Host can be added for richer context.
 	// ----------------------------------------
 	// ActionMetadata contains any additional details specific to the action taken.
-	ActionMeta map[string]interface{} `json:"action_metadata"    db:"action_metadata"`
+	ActionMeta map[string]string `json:"action_metadata"    db:"action_metadata"`
 	// ActorMetadata contains additional details about the actor.
-	ActorMeta map[string]interface{} `json:"actor_metadata"     db:"actor_metadata"`
+	ActorMeta map[string]string `json:"actor_metadata"     db:"actor_metadata"`
 }
 
 // Clear clears the event struct for reuse.
@@ -34,6 +34,6 @@ func (e *Event) Clear() {
 	e.Timestamp = time.Time{}
 	e.EventID = ""
 	e.Version = ""
-	e.ActionMeta = nil
-	e.ActorMeta = nil
+	e.ActionMeta = map[string]string{}
+	e.ActorMeta = map[string]string{}
 }
