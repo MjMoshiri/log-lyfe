@@ -18,4 +18,5 @@ type DBConfig struct {
 type ServerConfig struct {
 	Port      string `yaml:"port"`
 	SecretKey string `yaml:"secretKey"`
+	QueryKey  string `yaml:"queryKey"`
 }

@@ -16,7 +16,6 @@ func AuthMiddleware(key string) server.MiddlewareFunc {
 				_, err := w.Write([]byte("Unauthorized"))
 				if err != nil {
 					// TODO: log error
-					return
 				}
 				return
 			}
