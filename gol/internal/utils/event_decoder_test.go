@@ -1,0 +1,93 @@
+package utils
+
+import (
+	"github.com/stretchr/testify/assert"
+	"strings"
+	"testing"
+)
+
+func TestDecodeEvent(t *testing.T) {
+	// 1. Successful Decoding Test
+	t.Run("Successful Decoding", func(t *testing.T) {
+		validJSON := `{
+			"action": "login",
+			"actor": "john_doe",
+			"timestamp": "2023-09-10T10:00:00Z",
+			"event_id": "12345",
+			"version": "1.0",
+			"action_metadata": {"ip": "127.0.0.1"},
+			"actor_metadata": {"role": "admin"}
+		}`
+		event, err := DecodeEvent(strings.NewReader(validJSON))
+		assert.NoError(t, err)
+		assert.Equal(t, "login", event.Action)
+	})
+
+	// 2. Unknown Fields Test
+	t.Run("Unknown Fields", func(t *testing.T) {
+		unknownFieldJSON := `{
+			"unknown_field": "unknown",
+			"action": "login",
+			"actor": "john_doe",
+			"timestamp": "2023-09-10T10:00:00Z",
+			"event_id": "12345",
+			"version": "1.0"
+		}`
+		_, err := DecodeEvent(strings.NewReader(unknownFieldJSON))
+		assert.Error(t, err)
+	})
+
+	// 3. Invalid JSON Test
+	t.Run("Invalid JSON", func(t *testing.T) {
+		invalidJSON := `{"action": "login", "actor": "john_doe"`
+		_, err := DecodeEvent(strings.NewReader(invalidJSON))
+		assert.Error(t, err)
+	})
+
+	// 4. Metadata Type Mismatch Test
+	t.Run("Metadata Type Mismatch", func(t *testing.T) {
+		wrongTypeJSON := `{
+			"action": "login",
+			"actor": "john_doe",
+			"timestamp": "2023-09-10T10:00:00Z",
+			"event_id": "12345",
+			"version": "1.0",
+			"action_metadata": []
+		}`
+		_, err := DecodeEvent(strings.NewReader(wrongTypeJSON))
+		assert.Error(t, err)
+	})
+
+	// 5. Invalid Date Format Test
+	t.Run("Invalid Date Format", func(t *testing.T) {
+		invalidDateJSON := `{
+			"action": "login",
+			"actor": "john_doe",
+			"timestamp": "10-09-2023",
+			"event_id": "12345",
+			"version": "1.0"
+		}`
+		_, err := DecodeEvent(strings.NewReader(invalidDateJSON))
+		assert.Error(t, err)
+	})
+
+	// 6. Empty Input Test
+	t.Run("Empty Input", func(t *testing.T) {
+		_, err := DecodeEvent(strings.NewReader(""))
+		assert.Error(t, err)
+	})
+
+	// 7. Metadata As String Test
+	t.Run("Metadata As String", func(t *testing.T) {
+		metadataStringJSON := `{
+			"action": "login",
+			"actor": "john_doe",
+			"timestamp": "2023-09-10T10:00:00Z",
+			"event_id": "12345",
+			"version": "1.0",
+			"action_metadata": "string_data"
+		}`
+		_, err := DecodeEvent(strings.NewReader(metadataStringJSON))
+		assert.Error(t, err)
+	})
+}
