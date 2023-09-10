@@ -13,3 +13,9 @@ type DBConfig struct {
 	Table       string            `yaml:"table"`
 	Consistency gocql.Consistency `yaml:"consistency"`
 }
+
+// ServerConfig represents the configuration for the server
+type ServerConfig struct {
+	Port      string `yaml:"port"`
+	SecretKey string `yaml:"secretKey"`
+}
