@@ -7,6 +7,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/scylladb/gocqlx/v2 v2.8.0
 	github.com/stretchr/testify v1.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -17,5 +18,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/scylladb/go-reflectx v1.0.1 // indirect
+	golang.org/x/sync v0.3.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 )

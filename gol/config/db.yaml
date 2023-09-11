@@ -1,0 +1,7 @@
+cluster:
+  - localhost:9042
+keyspace: logger
+username: cassandra
+password: cassandra
+table: events
+consistency: 1

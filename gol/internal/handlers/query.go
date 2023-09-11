@@ -2,7 +2,7 @@ package handlers
 
 import (
 	json "github.com/json-iterator/go"
-	"github.com/mjmoshiri/log-lyfe/gol/internal/utils"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg"
 	"net/http"
 	"strconv"
 )
@@ -18,7 +18,7 @@ func (h *AppHandler) HandleQueryRequest(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Convert body to map literal
-	filters, err := utils.ConvertToMapLiteral(r.Body)
+	filters, err := pkg.ConvertToMapLiteral(r.Body)
 	if err != nil {
 		http.Error(w, "Error converting body to map literal", http.StatusBadRequest)
 		return

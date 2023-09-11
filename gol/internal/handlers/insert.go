@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
-	"github.com/mjmoshiri/log-lyfe/gol/internal/utils"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg/parser"
 	"net/http"
 	"time"
 )
@@ -40,18 +41,18 @@ func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter)
 		}
 
 		// Get an event from the pool
-		event := utils.EventPool.Get().(*models.Event)
-		defer utils.EventPool.Put(event)
+		event := models.EventPool.Get().(*models.Event)
+		defer models.EventPool.Put(event)
 
 		// Decode the body
-		err := utils.DecodeEvent(r.Body, event)
+		err := parser.FromJSON(r.Body, event)
 		if err != nil {
 			http.Error(w, "Error decoding the event", http.StatusBadRequest)
 			return
 		}
 
 		// Validate the event
-		err = utils.ValidateEvent(event)
+		err = pkg.ValidateEvent(event)
 		if err != nil {
 			http.Error(w, "Invalid event data", http.StatusBadRequest)
 			return
