@@ -4,8 +4,12 @@ import (
 	"net/http"
 )
 
-// QueryAuthMiddleware is a middleware that checks authentication of a query request
-// TODO: Implement a generic middleware that take a AuthObject interface (e.g. the endpoint, key, value, method)
+// QueryAuthMiddleware returns a middleware function that authenticates
+// GET requests to the "/query" endpoint using the provided key.
+//
+// TODO:
+// Consider implementing a generic middleware that accepts an AuthObject interface
+// to specify authentication details like endpoint, key, value, and method.
 func QueryAuthMiddleware(key string) MiddlewareFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {

@@ -8,8 +8,8 @@ import (
 	"github.com/mjmoshiri/log-lyfe/gol/storage"
 )
 
-// SetupRoutes sets up the routes for the application.
-// In production, OpenAPI could be used to generate the routes.
+// SetupRoutes initializes the application routes and applies necessary middlewares.
+// Consider using OpenAPI for route generation in production environments.
 func SetupRoutes(app *api.App, db storage.DB, serverConfig *models.ServerConfig) {
 	app.Use(middlewares.QueryAuthMiddleware(serverConfig.QueryKey))
 	app.Use(middlewares.AuthMiddleware(serverConfig.SecretKey))

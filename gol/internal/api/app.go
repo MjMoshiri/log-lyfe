@@ -1,3 +1,5 @@
+// Package api provides core functionalities for setting up and managing the application's HTTP server.
+// It includes utilities for route management, middleware application, and server configuration.
 package api
 
 import (
@@ -13,7 +15,7 @@ import (
 	"time"
 )
 
-// New creates a new App instance.
+// New initializes a new App instance with the provided server configuration.
 func New(config *models.ServerConfig) App {
 	return App{
 		config: config,
@@ -22,18 +24,18 @@ func New(config *models.ServerConfig) App {
 	}
 }
 
-// Use adds a middleware to the *api.App instance.
+// Use appends a middleware to the App's middleware stack.
 func (a *App) Use(m middlewares.MiddlewareFunc) {
 	a.middlewares = append(a.middlewares, m)
 }
 
-// AddRoute adds a route to the *api.App instance.
+// AddRoute associates a given HTTP method and route with a handler in the App's router.
 func (a *App) AddRoute(method string, route string, handler http.HandlerFunc) {
 	key := method + ":" + route
 	a.router[key] = handler
 }
 
-// ServeHTTP is the main entry point for the *api.App instance.
+// ServeHTTP processes incoming HTTP requests, applying middlewares and routing to the appropriate handler.
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	key := r.Method + ":" + r.URL.Path
 	if handler, exists := a.router[key]; exists {
@@ -47,35 +49,34 @@ func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ListenAndServe starts the *api.App instance.
+// ListenAndServe starts the App's HTTP server, listening for incoming requests and handling graceful shutdown.
 func (a *App) ListenAndServe() {
 	server := &http.Server{
 		Addr:    "localhost:" + a.config.Port,
 		Handler: a,
 	}
 
-	// Start the server
+	// Start the server asynchronously
 	go func() {
 		log.Printf("Server started on %s", a.config.Port)
-		close(a.Ready)
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			close(a.Ready)
+		}()
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Could not listen on %s: %v\n", a.config.Port, err)
 		}
 	}()
 
-	// Create a channel to listen for OS signals
+	// Await OS signals for termination
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
-
-	// Block until we receive a signal
 	<-stopChan
 	log.Println("Shutting down server...")
 
-	// Create a context with timeout for the server to shut down
+	// Context for graceful server shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	// Attempt graceful shutdown
 	if err := server.Shutdown(ctx); err != nil {
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}

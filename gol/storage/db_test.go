@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
-	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg/eventer"
 	storage2 "github.com/mjmoshiri/log-lyfe/gol/storage"
 	"github.com/stretchr/testify/assert"
 	"strconv"
@@ -99,7 +99,7 @@ func TestFind(t *testing.T) {
 	})
 	// 7. Multiple Filters
 	t.Run("Multiple Filters", func(t *testing.T) {
-		filters := map[string]interface{}{"action": `'create'`, "bucket": strconv.FormatInt(pkg.TimeToBucket(events[7].Timestamp), 10)}
+		filters := map[string]interface{}{"action": `'create'`, "bucket": strconv.FormatInt(eventer.TimeToBucket(events[7].Timestamp), 10)}
 		results, err := db.Find(filters, 0)
 		assert.Nil(t, err)
 		assert.Equal(t, 3, len(results))

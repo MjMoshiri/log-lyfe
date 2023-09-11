@@ -7,25 +7,25 @@ import (
 	"strconv"
 )
 
-// HandleQueryRequest handles a query request
-// TODO: Add timeout either by server or by request
+// HandleQueryRequest processes query requests, expecting JSON content and optional fetch size.
+// TODO: Implement a timeout mechanism for the request.
 func (h *AppHandler) HandleQueryRequest(w http.ResponseWriter, r *http.Request) {
-	// Check for JSON content type
+	// Ensure JSON content type
 	contentType := r.Header.Get("Content-Type")
 	if contentType != "application/json" {
 		http.Error(w, "Invalid Content-Type, expected 'application/json'", http.StatusUnsupportedMediaType)
 		return
 	}
 
-	// Convert body to map literal
+	// Convert request body to map literal for filtering
 	filters, err := pkg.ConvertToMapLiteral(r.Body)
 	if err != nil {
 		http.Error(w, "Error converting body to map literal", http.StatusBadRequest)
 		return
 	}
 
+	// Extract and validate fetch size from headers
 	fetchSizeString := r.Header.Get("Fetch-Size")
-	// convert to int
 	fetchSize := 0
 	if fetchSizeString != "" {
 		fetchSize, err = strconv.Atoi(fetchSizeString)
@@ -38,14 +38,13 @@ func (h *AppHandler) HandleQueryRequest(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 	}
-	// Find events with the given filters
+	// Retrieve events based on filters and fetch size
 	events, err := h.DB.Find(filters, uint(fetchSize))
 	if err != nil {
 		http.Error(w, "Error fetching events from database", http.StatusInternalServerError)
 		return
 	}
-
-	// Convert results to JSON and write to response body
+	// Encode and return the retrieved events as JSON
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(events)
 	if err != nil {

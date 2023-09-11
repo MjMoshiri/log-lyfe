@@ -6,9 +6,9 @@ import (
 	"io"
 )
 
-// ConvertToMapLiteral converts a JSON object to a map[string]string, where the
-// values are converted to string literals.
-// e.g. {"name": "John", "age": 30} -> {"name": "'John'", "age": "30"}
+// ConvertToMapLiteral transforms a JSON object into a map[string]string.
+// All values are represented as string literals.
+// For instance, {"name": "John", "age": 30} becomes {"name": "'John'", "age": "30"}.
 func ConvertToMapLiteral(r io.Reader) (map[string]string, error) {
 	var inputData map[string]interface{}
 	if err := json.NewDecoder(r).Decode(&inputData); err != nil {

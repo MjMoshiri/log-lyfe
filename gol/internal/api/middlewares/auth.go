@@ -1,11 +1,13 @@
+// Package middlewares provides middleware functions for the API.
 package middlewares
 
 import (
 	"net/http"
 )
 
-// AuthMiddleware is a middleware that checks for a valid Authorization header
-// this is a very simple implementation, as a proof of concept.
+// AuthMiddleware returns a middleware function that checks for a valid
+// Authorization header against the provided key. It's a basic implementation
+// primarily for demonstration purposes.
 func AuthMiddleware(key string) MiddlewareFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {

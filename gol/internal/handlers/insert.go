@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
-	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg/eventer"
 	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg/parser"
 	"net/http"
 	"time"
 )
 
-// HandleEventRequest handles Post requests to /event with Timeout
+// HandleEventRequest processes POST requests to /event, ensuring the operation completes within a set timeout.
 func (h *AppHandler) HandleEventRequest(w http.ResponseWriter, r *http.Request) {
 	// Timeout for the whole process
 	timeoutChannel := make(chan bool, 1)
@@ -18,7 +18,7 @@ func (h *AppHandler) HandleEventRequest(w http.ResponseWriter, r *http.Request) 
 	}()
 
 	select {
-	case <-h.processEventRequest(r, w):
+	case <-h.processEventRequest(w, r):
 		return
 	case <-timeoutChannel:
 		http.Error(w, "Request timed out", http.StatusRequestTimeout)
@@ -26,8 +26,9 @@ func (h *AppHandler) HandleEventRequest(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// processEventRequest the actual processing of the event request happens here
-func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter) chan bool {
+// processEventRequest performs the actual processing of the event request. It validates the content type,
+// decodes the event, validates the event data, and inserts it into the database.
+func (h *AppHandler) processEventRequest(w http.ResponseWriter, r *http.Request) chan bool {
 	doneChannel := make(chan bool, 1)
 
 	go func() {
@@ -41,8 +42,8 @@ func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter)
 		}
 
 		// Get an event from the pool
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 
 		// Decode the body
 		err := parser.FromJSON(r.Body, event)
@@ -52,7 +53,7 @@ func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter)
 		}
 
 		// Validate the event
-		err = pkg.ValidateEvent(event)
+		err = eventer.ValidateEvent(event)
 		if err != nil {
 			http.Error(w, "Invalid event data", http.StatusBadRequest)
 			return

@@ -5,8 +5,9 @@ import (
 	"net/http"
 )
 
-// RecoverMiddleware is a middleware that recovers from panics
-// In production it's better to add a logging middleware before this one
+// RecoverMiddleware returns a middleware function that recovers from panics
+// during request processing, logging the error and returning a 500 status.
+// For production use, consider pairing this with a logging middleware.
 func RecoverMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

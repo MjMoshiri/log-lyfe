@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Events is a slice of models.Event for testing the storage package.
+// Events provides a sample slice of models.Event, primarily used for testing the storage package.
 var Events = []models.Event{
 	{
 		Action:     "create",

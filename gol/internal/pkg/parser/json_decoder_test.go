@@ -2,6 +2,7 @@ package parser
 
 import (
 	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg/eventer"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -19,8 +20,8 @@ func TestDecodeEvent(t *testing.T) {
 			"action_metadata": {"ip": "127.0.0.1"},
 			"actor_metadata": {"role": "admin"}
 		}`
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(validJSON), event)
 		assert.NoError(t, err)
 		assert.Equal(t, "login", event.Action)
@@ -36,8 +37,8 @@ func TestDecodeEvent(t *testing.T) {
 			"event_id": "12345",
 			"version": "1.0"
 		}`
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(unknownFieldJSON), event)
 		assert.Error(t, err)
 	})
@@ -45,8 +46,8 @@ func TestDecodeEvent(t *testing.T) {
 	// 3. Invalid JSON Test
 	t.Run("Invalid JSON", func(t *testing.T) {
 		invalidJSON := `{"action": "login", "actor": "john_doe"`
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(invalidJSON), event)
 		assert.Error(t, err)
 	})
@@ -61,8 +62,8 @@ func TestDecodeEvent(t *testing.T) {
 			"version": "1.0",
 			"action_metadata": []
 		}`
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(wrongTypeJSON), event)
 		assert.Error(t, err)
 	})
@@ -76,16 +77,16 @@ func TestDecodeEvent(t *testing.T) {
 			"event_id": "12345",
 			"version": "1.0"
 		}`
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(invalidDateJSON), event)
 		assert.Error(t, err)
 	})
 
 	// 6. Empty Input Test
 	t.Run("Empty Input", func(t *testing.T) {
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(""), event)
 		assert.Error(t, err)
 	})
@@ -100,8 +101,8 @@ func TestDecodeEvent(t *testing.T) {
 			"version": "1.0",
 			"action_metadata": "string_data"
 		}`
-		event := models.EventPool.Get().(*models.Event)
-		defer models.EventPool.Put(event)
+		event := eventer.EventPool.Get().(*models.Event)
+		defer eventer.EventPool.Put(event)
 		err := FromJSON(strings.NewReader(metadataStringJSON), event)
 		assert.Error(t, err)
 	})

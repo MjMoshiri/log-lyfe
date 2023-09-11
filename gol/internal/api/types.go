@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// App is the main application struct.
+// App represents the main application structure, encapsulating middleware, configuration, routing, and server readiness.
 type App struct {
 	middlewares []middlewares.MiddlewareFunc
 	config      *models.ServerConfig

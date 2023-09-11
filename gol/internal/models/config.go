@@ -1,6 +1,7 @@
+// Package models defines the primary data structures used throughout the application.
 package models
 
-// DBConfig represents the configuration for connecting to the Cassandra cluster
+// DBConfig defines the parameters for connecting to a Cassandra cluster.
 type DBConfig struct {
 	Cluster     []string `yaml:"cluster"`
 	Keyspace    string   `yaml:"keyspace"`
@@ -10,14 +11,14 @@ type DBConfig struct {
 	Consistency uint16   `yaml:"consistency"`
 }
 
-// ServerConfig represents the configuration for the server
+// ServerConfig holds the server's configuration details.
 type ServerConfig struct {
 	Port      string `yaml:"port"`
 	SecretKey string `yaml:"secretKey"`
 	QueryKey  string `yaml:"queryKey"`
 }
 
-// SystemInfo represents the system information returned by the info handler
+// SystemInfo encapsulates system details returned by the info endpoint.
 type SystemInfo struct {
 	Hostname  string `json:"hostname"`
 	OS        string `json:"os"`

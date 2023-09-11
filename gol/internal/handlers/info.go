@@ -8,8 +8,8 @@ import (
 	"runtime"
 )
 
-// InfoHandler handles requests to /info
-// returns system information, in production this could be used for versioning
+// InfoHandler responds to /info requests with system information.
+// In production, this can be useful for providing system versioning details.
 func (h *AppHandler) InfoHandler(w http.ResponseWriter, r *http.Request) {
 	hostname, err := os.Hostname()
 	if err != nil {

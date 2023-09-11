@@ -1,29 +1,30 @@
+// Package storage provides abstractions and utilities for interacting with data storage systems, such as databases.
 package storage
 
 import (
 	"errors"
 	"github.com/gocql/gocql"
 	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
-	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/pkg/eventer"
 	"github.com/scylladb/gocqlx/v2"
 	"github.com/scylladb/gocqlx/v2/qb"
 )
 
-// database is the internal representation of our database with the actual session
+// database represents the internal structure of our database, including the active session.
 type database struct {
-	// TODO: define a custom Session interface for mocking
+	// TODO: Introduce a custom Session interface for easier mocking.
 	session gocqlx.Session
 	table   string
 }
 
-// DB is an interface that represents the methods the server needs
+// DB defines the methods required for server-database interactions.
 type DB interface {
 	Insert(event *models.Event) error
 	Find(filters map[string]string, fetchSize uint) ([]models.Event, error)
 	Close()
 }
 
-// New creates a new database instance using the provided configuration and returns it as a DB interface
+// New initializes a new database instance based on the provided configuration and returns a DB interface.
 func New(cfg models.DBConfig) (DB, error) {
 	cluster := gocql.NewCluster(cfg.Cluster...)
 	cluster.Keyspace = cfg.Keyspace
@@ -42,17 +43,16 @@ func New(cfg models.DBConfig) (DB, error) {
 	}, nil
 }
 
-// Insert inserts an event into the database
+// Insert adds an event to the database.
 func (db *database) Insert(event *models.Event) error {
-	event.Bucket = pkg.TimeToBucket(event.Timestamp)
+	event.Bucket = eventer.TimeToBucket(event.Timestamp)
 	return db.session.Query(EventTable.Insert()).BindStruct(event).ExecRelease()
 }
 
-// Find finds events in the database based on the provided filters
-// in production, this method would be paginated, but for the sake of simplicity, we'll just use a fetch size
-// the fetch size is capped at 10000
-// This method is not optimized for performance as
-// Allowing Filtering is not recommended in production (Cassandra is Query Driven, not Schema Driven)
+// Find retrieves events from the database based on provided filters.
+// For simplicity, this method uses a fetch size instead of pagination, with a maximum cap of 10,000.
+// Note: This method is not optimized for performance. Using 'AllowFiltering' is not recommended in production
+// as Cassandra is query-driven, not schema-driven.
 func (db *database) Find(filters map[string]string, fetchSize uint) ([]models.Event, error) {
 	if fetchSize == 0 {
 		fetchSize = 1000
@@ -74,7 +74,7 @@ func (db *database) Find(filters map[string]string, fetchSize uint) ([]models.Ev
 	return events, nil
 }
 
-// Close closes the database session
+// Close terminates the database session.
 func (db *database) Close() {
 	db.session.Close()
 }

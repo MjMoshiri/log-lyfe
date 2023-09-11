@@ -2,8 +2,8 @@ package handlers
 
 import "github.com/mjmoshiri/log-lyfe/gol/storage"
 
-// AppHandler is the custom handler type for the application
-// that has access to the database interface.
+// AppHandler represents the application's custom handler.
+// It provides access to the underlying database interface.
 type AppHandler struct {
 	DB storage.DB
 }
