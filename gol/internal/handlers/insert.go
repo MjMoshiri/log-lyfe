@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
 	"github.com/mjmoshiri/log-lyfe/gol/internal/utils"
 	"net/http"
 	"time"
 )
 
+// HandleEventRequest handles Post requests to /event with Timeout
 func (h *AppHandler) HandleEventRequest(w http.ResponseWriter, r *http.Request) {
 	// Timeout for the whole process
 	timeoutChannel := make(chan bool, 1)
@@ -23,6 +25,7 @@ func (h *AppHandler) HandleEventRequest(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// processEventRequest the actual processing of the event request happens here
 func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter) chan bool {
 	doneChannel := make(chan bool, 1)
 
@@ -36,15 +39,19 @@ func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter)
 			return
 		}
 
+		// Get an event from the pool
+		event := utils.EventPool.Get().(*models.Event)
+		defer utils.EventPool.Put(event)
+
 		// Decode the body
-		event, err := utils.DecodeEvent(r.Body)
+		err := utils.DecodeEvent(r.Body, event)
 		if err != nil {
 			http.Error(w, "Error decoding the event", http.StatusBadRequest)
 			return
 		}
 
 		// Validate the event
-		err = utils.ValidateEvent(*event)
+		err = utils.ValidateEvent(event)
 		if err != nil {
 			http.Error(w, "Invalid event data", http.StatusBadRequest)
 			return
@@ -59,7 +66,11 @@ func (h *AppHandler) processEventRequest(r *http.Request, w http.ResponseWriter)
 
 		// If everything worked, return 200
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Event processed successfully"))
+		_, err = w.Write([]byte("Event processed successfully"))
+		if err != nil {
+			// TODO: log error
+			return
+		}
 	}()
 
 	return doneChannel

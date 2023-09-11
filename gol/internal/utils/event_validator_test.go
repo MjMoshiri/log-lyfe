@@ -2,17 +2,17 @@ package utils
 
 import (
 	"errors"
+	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
 	"testing"
 	"time"
 
-	"github.com/mjmoshiri/log-lyfe/gol/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateEvent(t *testing.T) {
 	// 1. Action is empty.
 	t.Run("Empty Action", func(t *testing.T) {
-		event := models.Event{
+		event := &models.Event{
 			Actor:     "john_doe",
 			Timestamp: time.Now(),
 			EventID:   "12345",
@@ -23,7 +23,7 @@ func TestValidateEvent(t *testing.T) {
 
 	// 2. Actor is empty.
 	t.Run("Empty Actor", func(t *testing.T) {
-		event := models.Event{
+		event := &models.Event{
 			Action:    "login",
 			Timestamp: time.Now(),
 			EventID:   "12345",
@@ -34,7 +34,7 @@ func TestValidateEvent(t *testing.T) {
 
 	// 3. Timestamp is zero.
 	t.Run("Zero Timestamp", func(t *testing.T) {
-		event := models.Event{
+		event := &models.Event{
 			Action:  "login",
 			Actor:   "john_doe",
 			EventID: "12345",
@@ -45,7 +45,7 @@ func TestValidateEvent(t *testing.T) {
 
 	// 4. EventID is empty.
 	t.Run("Empty EventID", func(t *testing.T) {
-		event := models.Event{
+		event := &models.Event{
 			Action:    "login",
 			Actor:     "john_doe",
 			Timestamp: time.Now(),
@@ -56,7 +56,7 @@ func TestValidateEvent(t *testing.T) {
 
 	// 5. All fields are missing.
 	t.Run("Multiple Fields Missing", func(t *testing.T) {
-		event := models.Event{
+		event := &models.Event{
 			Actor: "john_doe",
 		}
 		err := ValidateEvent(event)

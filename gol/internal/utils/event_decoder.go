@@ -8,14 +8,8 @@ import (
 
 // DecodeEvent decodes an event from an io.Reader, returning a pointer to the event
 // or an error in case of failure.
-func DecodeEvent(r io.Reader) (*models.Event, error) {
-	event := EventPool.Get().(*models.Event)
-	event.Clear()
+func DecodeEvent(r io.Reader, event *models.Event) error {
 	decoder := json.NewDecoder(r)
 	decoder.DisallowUnknownFields()
-	err := decoder.Decode(event)
-	if err != nil {
-		return nil, err
-	}
-	return event, nil
+	return decoder.Decode(event)
 }

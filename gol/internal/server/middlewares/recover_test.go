@@ -10,7 +10,7 @@ import (
 
 func TestRecoverMiddleware(t *testing.T) {
 	config := &models.ServerConfig{
-		Port: ":8080",
+		Port: ":8083",
 	}
 	app := server.New(config)
 	app.Use(middlewares.RecoverMiddleware)
@@ -22,7 +22,7 @@ func TestRecoverMiddleware(t *testing.T) {
 	})
 	go app.ListenAndServe()
 	<-app.Ready
-	resp, err := http.Get("http://localhost:8080/panic")
+	resp, err := http.Get("http://localhost:8083/panic")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func TestRecoverMiddleware(t *testing.T) {
 	}
 
 	// Test no panic
-	resp, err = http.Get("http://localhost:8080/home")
+	resp, err = http.Get("http://localhost:8083/home")
 	if err != nil {
 		t.Fatal(err)
 	}

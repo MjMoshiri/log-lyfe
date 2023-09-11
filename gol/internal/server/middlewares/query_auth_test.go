@@ -9,7 +9,7 @@ import (
 
 func TestQueryAuthMiddleware(t *testing.T) {
 	config := &models.ServerConfig{
-		Port:     ":8081",
+		Port:     ":8082",
 		QueryKey: "correct-key",
 	}
 	app := server.New(config)
@@ -39,7 +39,7 @@ func TestQueryAuthMiddleware(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		req, err := http.NewRequest(tc.method, "http://localhost:8081"+tc.path, nil)
+		req, err := http.NewRequest(tc.method, "http://localhost:8082"+tc.path, nil)
 		if err != nil {
 			t.Fatal(err)
 		}

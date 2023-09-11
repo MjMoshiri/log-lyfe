@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+// HandleQueryRequest handles a query request
+// TODO: Add timeout either by server or by request
 func (h *AppHandler) HandleQueryRequest(w http.ResponseWriter, r *http.Request) {
 	// Check for JSON content type
 	contentType := r.Header.Get("Content-Type")
