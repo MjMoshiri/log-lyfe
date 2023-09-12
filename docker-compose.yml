@@ -1,0 +1,52 @@
+version: '3.4'
+
+services:
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - "MAX_HEAP_SIZE=256M"
+      - "HEAP_NEWSIZE=128M"
+    restart: always
+    volumes:
+      - ./out/cassandra_data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD", "cqlsh", "-u cassandra", "-p cassandra" ,"-e describe keyspaces"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - appNetwork
+
+  cassandra-load-keyspace:
+    container_name: cassandra-load-keyspace
+    image: cassandra:latest
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ./cassandra/init.cql:/init.cql
+    command: /bin/bash -c "echo loading cassandra keyspace && cqlsh cassandra -f /init.cql && echo cassandra keyspace loaded"
+    networks:
+      - appNetwork
+
+  go-backend:
+    container_name: server
+    image: golang:1.21
+    depends_on:
+      cassandra-load-keyspace:
+        condition: service_completed_successfully
+    volumes:
+      - ./gol:/App
+    working_dir: /App
+    ports:
+      - "8080:8080"
+    command: /bin/bash -c "echo starting server && make build && ./gol"
+    networks:
+      - appNetwork
+
+networks:
+  appNetwork:
+    driver: bridge

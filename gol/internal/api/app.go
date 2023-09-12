@@ -52,7 +52,7 @@ func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // ListenAndServe starts the App's HTTP server, listening for incoming requests and handling graceful shutdown.
 func (a *App) ListenAndServe() {
 	server := &http.Server{
-		Addr:    "localhost:" + a.config.Port,
+		Addr:    "0.0.0.0:" + a.config.Port,
 		Handler: a,
 	}
 
