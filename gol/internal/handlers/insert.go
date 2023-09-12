@@ -43,6 +43,7 @@ func (h *AppHandler) processEventRequest(w http.ResponseWriter, r *http.Request)
 
 		// Get an event from the pool
 		event := eventer.EventPool.Get().(*models.Event)
+		event.Clear()
 		defer eventer.EventPool.Put(event)
 
 		// Decode the body
