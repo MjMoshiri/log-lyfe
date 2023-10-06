@@ -4,7 +4,7 @@
 
 # **Audit your logs**
 
-gol is a state-of-the-art log service written in Go for its server-side operations and Cassandra for backend data storage.
+Initially undertaken as a self-study project and a showcase of my abilities, gol is a high-performance log auditing service. Built with Go for server-side operations and Cassandra for efficient data storage, it emphasizes availability, scalability, and low latency.
 
 ## **Understanding the Choice: Go & Cassandra**
 
@@ -99,8 +99,43 @@ You can interact with the server using tools like `curl` and ensure you're provi
 #### ***Example Request*** :
 
 ```bash
-curl -X POST -H "Authorization: canon" -H "Content-Type: application/json" -d @insert.json http://localhost:8080/insert
+curl -X POST -H "Authorization: canon" -H "Content-Type: application/json" -d @data.json http://localhost:8080/insert
 ```
+#### ***Automated Data Insertion*** :
 
+Use the `insert.sh` script to bulk insert JSON data objects from `insert.json` file.
+
+- **Prerequisites** :
+  - Install `jq` package 
+- **Usage** :
+```bash
+  chmod +x insert.sh
+  ./insert.sh
+  ```
 ####  ***Advanced Interactions*** 
 If you'd like to delve deeper into the application or perform tasks like running tests or generating documentation, there's a Makefile located in the `/gol` directory packed with useful commands.
+
+
+## **Known Limitations & Areas for Improvement**
+
+Even though I've paused development on this project for now, these are the areas I believe have immense potential for further enhancement and deeper learning:
+
+### **Testing**:
+- I'm still honing my skills in test implementation, so this version might not have exhaustive API-related testing.
+- Keen to dive deeper into benchmarks, which are currently not in place.
+- While I've addressed many errors there are still some that need to be handled for instance:
+  - The HTTP body size isn't limited, posing potential blockage risks.
+  - There's room to address potential injection vulnerabilities, especially with the gocql package, before rolling into production.
+
+### **Code Structure**:
+- I've made a conscious effort to segment packages. But, when it comes to API-related packages, there's potential for refining through more distinct interfaces and organization.
+- Some parts of the codebase are hardcoded – this will need reconsideration before a production rollout.
+- Comprehensive logging and control mechanisms are areas ripe for expansion.
+
+### **Architecture & Optimization**:
+- I've used advanced techniques like the json-iterator, which trumps the default JSON parser in speed, and have utilized sync.Pool for the insert handler given the high traffic it handles. Moreover, I've integrated a bucketing strategy for data distribution.
+- Looking ahead:
+  - Incorporating caching layers can yield better results.
+  - Adjustments in database settings, including the possibility of a Token Aware policy, should be on the radar.
+  - Splitting read/writer nodes can significantly refine optimization and offer a clearer distinction in roles.
+  - The use of a message queue can help in decoupling the application and database, and can also help in handling spikes in traffic.

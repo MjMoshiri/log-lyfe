@@ -1,0 +1,17 @@
+{
+  "action": "Modify",
+  "actor": "linda.brown@example.com",
+  "timestamp": "2023-09-11T17:20:50Z",
+  "event_id": "e4567890-89ab-cdef-0123-456789abcdef",
+  "version": "v1.2.3",
+  "action_metadata": {
+    "ip_address": "192.168.1.4",
+    "device": "Windows PC",
+    "location": "Chicago, USA"
+  },
+  "actor_metadata": {
+    "first_name": "Linda",
+    "last_name": "Brown",
+    "role": "Admin"
+  }
+}
