@@ -4,7 +4,7 @@
 
 # **Audit your logs**
 
-Initially undertaken as a self-study project and a showcase of my abilities, gol is a high-performance log auditing service. Built with Go for server-side operations and Cassandra for efficient data storage, it emphasizes availability, scalability, and low latency.
+Initially undertaken as a self-study project and a showcase of my abilities, gol is a high-performance log auditing microservice. Built with Go for server-side operations and Cassandra for efficient data storage, it emphasizes minimal external dependency, availability, scalability, and low latency.
 
 ## **Understanding the Choice: Go & Cassandra**
 
